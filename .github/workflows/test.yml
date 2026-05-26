@@ -1,20 +1,27 @@
-- name: Check required folders
-  run: |
-    echo "Checking required folders..."
+name: Fabric CI
 
-    if [ ! -d "notebooks" ]; then
-      echo "ERROR: notebooks folder is missing"
-      exit 1
-    fi
+on:
+  push:
+    branches:
+      - test
 
-    if [ ! -d "pipelines" ]; then
-      echo "ERROR: pipelines folder is missing"
-      exit 1
-    fi
+jobs:
+  validate:
+    runs-on: ubuntu-latest
 
-    if [ ! -d "sql" ]; then
-      echo "ERROR: sql folder is missing"
-      exit 1
-    fi
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v4
 
-    echo "All folders exist "
+      - name: Check folders
+        run: |
+          echo "Validating folders..."
+
+          for folder in notebooks pipelines sql; do
+            if [ ! -d "$folder" ]; then
+              echo "ERROR: Missing $folder"
+              exit 1
+            fi
+          done
+
+          echo "All folders exist ✔"
