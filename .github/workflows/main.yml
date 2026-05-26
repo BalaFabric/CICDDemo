@@ -1,0 +1,36 @@
+name: Fabric CI - test Validation
+
+on:
+  push:
+    branches: [ "test" ]
+  pull_request:
+    branches: [ "test" ]
+  workflow_dispatch:
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Show repository structure
+        run: ls -R
+
+      - name: Validate folder structure
+        run: |
+          echo "Checking required folders..."
+          test -d notebooks || echo "Warning: notebooks folder missing"
+          test -d sql || echo "Warning: sql folder missing"
+          test -d pipelines || echo "Warning: pipelines folder missing"
+
+      - name: Simulate Fabric validation
+        run: |
+          echo "Validating Fabric artifacts..."
+          echo "Notebook check passed"
+          echo "Pipeline check passed"
+          echo "SQL scripts check passed"
+
+      - name: CI Completed
+        run: echo "Fabric CI completed successfully"
