@@ -1,0 +1,62 @@
+name: Fabric CI - Test Branch Validation
+
+on:
+  push:
+    branches:
+      - test
+  pull_request:
+    branches:
+      - test
+  workflow_dispatch:
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+
+    steps:
+      # Step 1: Checkout code
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      # Step 2: Show start message
+      - name: Start CI
+        run: echo "Fabric CI started on test branch"
+
+      # Step 3: Validate folder structure
+      - name: Validate folders
+        run: |
+          echo "Checking required folders..."
+
+          REQUIRED_FOLDERS=("notebooks" "pipelines" "sql")
+
+          for folder in "${REQUIRED_FOLDERS[@]}"; do
+            if [ ! -d "$folder" ]; then
+              echo "ERROR: Missing folder -> $folder"
+              exit 1
+            else
+              echo "OK: $folder exists"
+            fi
+          done
+
+      # Step 4: Validate SQL files exist
+      - name: Validate SQL files
+        run: |
+          if ls sql/*.sql 1> /dev/null 2>&1; then
+            echo "SQL files found ✔"
+          else
+            echo "WARNING: No SQL files found"
+          fi
+
+      # Step 5: Validate Python files (PySpark/notebooks scripts)
+      - name: Validate Python syntax
+        run: |
+          python -m py_compile $(find . -name "*.py") || exit 1
+          echo "Python syntax check passed ✔"
+
+      # Step 6: Show repository structure
+      - name: Show repo structure
+        run: ls -R
+
+      # Step 7: Completion message
+      - name: CI Completed
+        run: echo "Fabric CI validation completed successfully ✔"
