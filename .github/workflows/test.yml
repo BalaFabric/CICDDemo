@@ -1,0 +1,20 @@
+- name: Check required folders
+  run: |
+    echo "Checking required folders..."
+
+    if [ ! -d "notebooks" ]; then
+      echo "ERROR: notebooks folder is missing"
+      exit 1
+    fi
+
+    if [ ! -d "pipelines" ]; then
+      echo "ERROR: pipelines folder is missing"
+      exit 1
+    fi
+
+    if [ ! -d "sql" ]; then
+      echo "ERROR: sql folder is missing"
+      exit 1
+    fi
+
+    echo "All folders exist "
